@@ -100,6 +100,14 @@ export default class GameController {
     ) {
       this.gamePlay.setCursor("crosshair");
       this.gamePlay.selectCell(index, "red");
+    } else if (
+      character &&
+      currentPosition &&
+      currentPosition != index &&
+      !this.isCellInRange(index, currentPosition, currentCharacter.range) &&
+      this.isCharacterInEnemyTeam(character)
+    ) {
+      this.gamePlay.setCursor("not-allowed");
     }
   }
 
