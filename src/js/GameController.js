@@ -1,14 +1,24 @@
 import themes from "./themes";
+import GameState from "./GameState";
 
 export default class GameController {
   constructor(gamePlay, stateService) {
     this.gamePlay = gamePlay;
     this.stateService = stateService;
   }
-
+  
   init() {
     // Инициализируем UI
     this.gamePlay.drawUi(themes.prairie);
+    
+
+    // -------------------------------------
+    // Инициация состояния игры
+    // -------------------------------------
+    this.gameState = new GameState(8);
+    this.gamePlay.redrawPositions(this.gameState.positions);
+
+
 
     // -------------------------------------
     // Добавляем обработчики игровых событий
@@ -18,9 +28,11 @@ export default class GameController {
     this.gamePlay.addCellEnterListener(this.onCellEnter.bind(this));
 
     // Выход из клетки
+    this.gamePlay.addCellLeaveListener(this.onCellLeave.bind(this));
 
     // Клик по клетке
     this.gamePlay.addCellClickListener(this.onCellClick.bind(this));
+
 
     // -------------------------------------
     // Загрузка и сохранение стейта игры
@@ -42,7 +54,7 @@ export default class GameController {
 
   onCellEnter(index) {
     console.log(`onCellEnter: ${index} entered`);
-    
+
     const character = this.stateService.getCharacter(index);
     if (character) {
       const message = `🎖${character.level} ⚔${character.attack} 🛡${character.defence} ❤${character.health}`;
@@ -51,7 +63,6 @@ export default class GameController {
   }
 
   onCellLeave(index) {
-    console.log(`Cell ${index} left`);
     this.gamePlay.hideCellTooltip(index);
   }
 
