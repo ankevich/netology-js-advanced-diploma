@@ -1,4 +1,4 @@
-import themes from './themes';
+import themes from "./themes";
 
 export default class GameController {
   constructor(gamePlay, stateService) {
@@ -8,45 +8,41 @@ export default class GameController {
 
   init() {
     // Инициализируем UI
-    this.gamePlay.drawUi(themes.prairie) 
-
+    this.gamePlay.drawUi(themes.prairie);
 
     // -------------------------------------
     // Добавляем обработчики игровых событий
     // -------------------------------------
-    
-    // Наведение на клетку
-    this.gamePlay.addCellEnterListener(this.onCellEnter)
-    
-    // Выход из клетки
-    this.gamePlay.addCellLeaveListener(this.onCellLeave)
-    
-    // Клик по клетке
-    this.gamePlay.addCellClickListener(this.onCellClick)
 
+    // Наведение на клетку
+    this.gamePlay.addCellEnterListener(this.onCellEnter.bind(this));
+
+    // Выход из клетки
+
+    // Клик по клетке
+    this.gamePlay.addCellClickListener(this.onCellClick.bind(this));
 
     // -------------------------------------
     // Загрузка и сохранение стейта игры
     // -------------------------------------
 
     // Клик по кноке New Game
-    this.gamePlay.addNewGameListener(this.onNewGame)
+    this.gamePlay.addNewGameListener(this.onNewGame.bind(this));
 
     // Клик по кнопке Save Game
-    this.gamePlay.addSaveGameListener(this.onSaveGame)
+    this.gamePlay.addSaveGameListener(this.onSaveGame.bind(this));
 
     // Клик по кнопке Load Game
-    this.gamePlay.addLoadGameListener(this.onLoadGame)
-
-    
+    this.gamePlay.addLoadGameListener(this.onLoadGame.bind(this));
   }
 
   onCellClick(index) {
-    // TODO: react to click
     console.log(`Cell ${index} clicked`);
   }
 
   onCellEnter(index) {
+    console.log(`onCellEnter: ${index} entered`);
+    
     const character = this.stateService.getCharacter(index);
     if (character) {
       const message = `🎖${character.level} ⚔${character.attack} 🛡${character.defence} ❤${character.health}`;
@@ -55,18 +51,19 @@ export default class GameController {
   }
 
   onCellLeave(index) {
+    console.log(`Cell ${index} left`);
     this.gamePlay.hideCellTooltip(index);
   }
 
   onNewGame() {
-    console.log('New game');
+    console.log("New game");
   }
 
   onSaveGame() {
-    console.log('Save game');
+    console.log("Save game");
   }
 
   onLoadGame() {
-    console.log('Load game');
+    console.log("Load game");
   }
 }
