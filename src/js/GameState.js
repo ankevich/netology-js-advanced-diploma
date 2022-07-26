@@ -10,14 +10,19 @@ import {
 import PositionedCharacter from "./PositionedCharacter";
 
 export default class GameState {
+  
   constructor(boardSize) {
     this.boardSize = boardSize;
     this.cells = new Array(boardSize * boardSize).fill(null);
-
+    
     this.currentPlayer = 0; // 0 - player, 1 - computer
+    this.currentSelection = null;
 
-    this.playerTeam = generateTeam([Magician, Bowman, Swordsman], 1, 2);
-    this.computerTeam = generateTeam([Daemon, Undead, Vampire], 1, 2);
+    this.allowedPlayerClasses = [Magician, Bowman, Swordsman];
+    this.allowedComputerClasses = [Vampire, Undead, Daemon];
+
+    this.playerTeam = generateTeam(this.allowedPlayerClasses, 1, 2);
+    this.computerTeam = generateTeam(this.allowedComputerClasses, 1, 2);
 
     this.positions = [];
     this.assignPositions();
