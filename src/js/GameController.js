@@ -46,35 +46,81 @@ export default class GameController {
   }
 
   onCellClick(index) {
-    console.log(`Cell ${index} clicked`);
     const character = this.gameState.getCharacterAt(index);
+    if (character) {
+      const [_, currentPosition] = this.gameState.currentSelection;
+      currentPosition && this.gamePlay.deselectCell(currentPosition);
 
-    if (character && this.gameState.playerTeam.includes(character)) {
-      if (this.gameState.currentSelection) { this.gamePlay.deselectCell(this.gameState.currentSelection); }
-      this.gamePlay.selectCell(index);
-      this.gameState.currentSelection = index;
-    } else if (character && this.gameState.computerTeam.includes(character)) {
-      GamePlay.showError("Нельзя выбирать не вашего персонажа");
+      if (this.isCharacterInPlayerTeam(character)) {
+        this.gamePlay.selectCell(index);
+        this.setCurentSlection(character, index);
+      } else if (character && !this.isCharacterInPlayerTeam(character)) {
+        GamePlay.showError("Нельзя выбирать не вашего персонажа");
+      }
     }
   }
 
   onCellEnter(index) {
     const character = this.gameState.getCharacterAt(index);
+    const [currentCharacter, currentPosition] = this.gameState.currentSelection;
+
+    // tooltip
     if (character) {
       const message = `🎖${character.level} ⚔${character.attack} 🛡${character.defence} ❤${character.health}`;
       this.gamePlay.showCellTooltip(message, index);
     }
 
-    if (this.gameState.currentSelection != index && this.gameState.playerTeam.includes(character)) {
+    // cursor pointer
+    if (
+      character &&
+      currentPosition != index &&
+      this.isCharacterInPlayerTeam(character)
+    ) {
       this.gamePlay.setCursor("pointer");
-    } else {
-      this.gamePlay.setCursor("default");
+    }
+
+    if (
+      !character &&
+      currentPosition &&
+      currentPosition != index &&
+      this.isCellInRange(index, currentPosition, currentCharacter.range)
+    ) {
+      this.gamePlay.setCursor("pointer");
+      this.gamePlay.selectCell(index, "green");
     }
   }
 
   onCellLeave(index) {
+    const [_, currentPosition] = this.gameState.currentSelection;
+
     this.gamePlay.hideCellTooltip(index);
     this.gamePlay.setCursor("default");
+    currentPosition &&
+      currentPosition != index &&
+      this.gamePlay.deselectCell(index);
+  }
+
+  setCurentSlection(character, index) {
+    this.gameState.currentSelection = [character, index];
+  }
+
+  isCharacterInPlayerTeam(character) {
+    return this.gameState.playerTeam.includes(character);
+  }
+
+  isCellInRange(cellIndex, centerIndex, radius) {
+    const boardSize = 8;
+
+    const x = Math.floor(cellIndex / boardSize);
+    const y = cellIndex % boardSize;
+
+    const cx = Math.floor(centerIndex / boardSize);
+    const cy = centerIndex % boardSize;
+
+    const dx = Math.abs(x - cx);
+    const dy = Math.abs(y - cy);
+
+    return dx <= radius && dy <= radius;
   }
 
   onNewGame() {

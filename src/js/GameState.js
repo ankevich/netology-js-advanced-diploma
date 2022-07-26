@@ -16,7 +16,7 @@ export default class GameState {
     this.cells = new Array(boardSize * boardSize).fill(null);
     
     this.currentPlayer = 0; // 0 - player, 1 - computer
-    this.currentSelection = null;
+    this.currentSelection = [null, null]; // [character, position]
 
     this.allowedPlayerClasses = [Magician, Bowman, Swordsman];
     this.allowedComputerClasses = [Vampire, Undead, Daemon];
