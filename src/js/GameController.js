@@ -1,5 +1,6 @@
 import themes from "./themes";
 import GameState from "./GameState";
+import GamePlay from "./GamePlay";
 
 export default class GameController {
   constructor(gamePlay, stateService) {
@@ -47,10 +48,13 @@ export default class GameController {
   onCellClick(index) {
     console.log(`Cell ${index} clicked`);
     const character = this.gameState.getCharacterAt(index);
+
     if (character && this.gameState.playerTeam.includes(character)) {
       if (this.gameState.currentSelection) { this.gamePlay.deselectCell(this.gameState.currentSelection); }
       this.gamePlay.selectCell(index);
       this.gameState.currentSelection = index;
+    } else if (character && this.gameState.computerTeam.includes(character)) {
+      GamePlay.showError("Нельзя выбирать не вашего персонажа");
     }
   }
 
