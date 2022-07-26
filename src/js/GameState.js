@@ -24,7 +24,6 @@ export default class GameState {
   }
 
   assignPositions() {
-
     var allowedPlayerStartPositions = [
       0, 1, 8, 9, 16, 17, 24, 25, 32, 33, 40, 41, 48, 49, 56, 57,
     ];
@@ -49,6 +48,13 @@ export default class GameState {
       allowedComputerPositions.splice(index, 1);
       this.positions.push(new PositionedCharacter(character, position));
     });
+  }
+
+  getCharacterAt(position) {
+    const positionedCharacter = this.positions.find(
+      (positionedCharacter) => positionedCharacter.position === position
+    );
+    return positionedCharacter ? positionedCharacter.character : null;
   }
 
   static restoreFrom(object) {

@@ -5,20 +5,17 @@ export default class GameController {
   constructor(gamePlay, stateService) {
     this.gamePlay = gamePlay;
     this.stateService = stateService;
+    this.gameState = new GameState(8);
   }
-  
+
   init() {
     // Инициализируем UI
     this.gamePlay.drawUi(themes.prairie);
-    
 
     // -------------------------------------
     // Инициация состояния игры
     // -------------------------------------
-    this.gameState = new GameState(8);
     this.gamePlay.redrawPositions(this.gameState.positions);
-
-
 
     // -------------------------------------
     // Добавляем обработчики игровых событий
@@ -32,7 +29,6 @@ export default class GameController {
 
     // Клик по клетке
     this.gamePlay.addCellClickListener(this.onCellClick.bind(this));
-
 
     // -------------------------------------
     // Загрузка и сохранение стейта игры
@@ -53,9 +49,7 @@ export default class GameController {
   }
 
   onCellEnter(index) {
-    console.log(`onCellEnter: ${index} entered`);
-
-    const character = this.stateService.getCharacter(index);
+    const character = this.gameState.getCharacterAt(index);
     if (character) {
       const message = `🎖${character.level} ⚔${character.attack} 🛡${character.defence} ❤${character.health}`;
       this.gamePlay.showCellTooltip(message, index);
