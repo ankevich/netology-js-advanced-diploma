@@ -70,7 +70,7 @@ export default class GameController {
       this.gamePlay.showCellTooltip(message, index);
     }
 
-    // cursor pointer
+    // Selection
     if (
       character &&
       currentPosition != index &&
@@ -79,6 +79,7 @@ export default class GameController {
       this.gamePlay.setCursor("pointer");
     }
 
+    // Move
     if (
       !character &&
       currentPosition &&
@@ -87,6 +88,18 @@ export default class GameController {
     ) {
       this.gamePlay.setCursor("pointer");
       this.gamePlay.selectCell(index, "green");
+    }
+
+    // Attack
+    if (
+      character &&
+      currentPosition &&
+      currentPosition != index &&
+      this.isCellInRange(index, currentPosition, currentCharacter.range) &&
+      this.isCharacterInEnemyTeam(character)
+    ) {
+      this.gamePlay.setCursor("crosshair");
+      this.gamePlay.selectCell(index, "red");
     }
   }
 
@@ -106,6 +119,10 @@ export default class GameController {
 
   isCharacterInPlayerTeam(character) {
     return this.gameState.playerTeam.includes(character);
+  }
+
+  isCharacterInEnemyTeam(character) {
+    return this.gameState.computerTeam.includes(character);
   }
 
   isCellInRange(cellIndex, centerIndex, radius) {
