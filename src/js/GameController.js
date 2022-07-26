@@ -64,10 +64,17 @@ export default class GameController {
       const message = `🎖${character.level} ⚔${character.attack} 🛡${character.defence} ❤${character.health}`;
       this.gamePlay.showCellTooltip(message, index);
     }
+
+    if (this.gameState.currentSelection != index && this.gameState.playerTeam.includes(character)) {
+      this.gamePlay.setCursor("pointer");
+    } else {
+      this.gamePlay.setCursor("default");
+    }
   }
 
   onCellLeave(index) {
     this.gamePlay.hideCellTooltip(index);
+    this.gamePlay.setCursor("default");
   }
 
   onNewGame() {
