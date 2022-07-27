@@ -50,18 +50,34 @@ export default class GameController {
     const [currentCharacter, currentPosition] = this.gameState.currentSelection;
     currentPosition && this.gamePlay.deselectCell(currentPosition);
 
-    // Выбор персонажа
-    if (character) {
-      if (this.isCharacterInPlayerTeam(character)) {
-        this.gamePlay.selectCell(index);
-        this.setCurentSlection(character, index);
-      } else if (character && !this.isCharacterInPlayerTeam(character)) {
-        GamePlay.showError("Нельзя выбирать не вашего персонажа");
-      }
-    }
-
-    // Перемещение персонажа
-    if (
+    if (character && this.isCharacterInPlayerTeam(character)) {
+      // Выбор персонажа
+      this.gamePlay.selectCell(index);
+      this.setCurentSlection(character, index);
+    } else if (
+      // Атака
+      this.isCharacterInEnemyTeam(character) &&
+      currentCharacter &&
+      this.isCellInRange(index, currentPosition, currentCharacter.range)
+    ) {
+      this.gamePlay.deselectCell(index);
+      this.gameState.attack(character);
+      const damage = Math.max(
+        currentCharacter.attack - character.defence,
+        currentCharacter.attack * 0.1
+      );
+      this.gamePlay.showDamage(index, damage).then(() => {
+        this.gamePlay.redrawPositions(this.gameState.positions);
+      });
+    } else if (
+      // Запрет на выбор чужого персонажа
+      character &&
+      currentCharacter == null &&
+      this.isCharacterInEnemyTeam(character)
+    ) {
+      GamePlay.showError("Нельзя выбирать не вашего персонажа");
+    } else if (
+      // Перемещение персонажа
       currentCharacter &&
       character == null &&
       this.isCellInRange(index, currentPosition, currentCharacter.range)

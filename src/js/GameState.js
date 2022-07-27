@@ -58,11 +58,31 @@ export default class GameState {
     const [selectedCharacter] = this.currentSelection;
     if (selectedCharacter) {
       const selectedCharacterIndex = this.positions.findIndex(
-        (character) => character.character === selectedCharacter
+        (positionedCharacter) =>
+          positionedCharacter.character === selectedCharacter
       );
       this.positions[selectedCharacterIndex].position = position;
       this.currentSelection = [null, null];
-      this.currentPlayer = 1 // switch to computer
+      this.currentPlayer = 1; // switch to computer
+    }
+  }
+
+  attack(opponent) {
+    const [character] = this.currentSelection;
+    if (character) {
+      const opponentIndex = this.positions.findIndex(
+        (positionedCharacter) => positionedCharacter.character === opponent
+      );
+
+      const damage = Math.max(
+        character.attack - opponent.defence,
+        character.attack * 0.1
+      );
+
+      this.positions[opponentIndex].character.health -= damage;
+
+      this.currentSelection = [null, null];
+      this.currentPlayer = 1; // switch to computer
     }
   }
 
