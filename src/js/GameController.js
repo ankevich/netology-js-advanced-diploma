@@ -47,16 +47,28 @@ export default class GameController {
 
   onCellClick(index) {
     const character = this.gameState.getCharacterAt(index);
-    if (character) {
-      const [_, currentPosition] = this.gameState.currentSelection;
-      currentPosition && this.gamePlay.deselectCell(currentPosition);
+    const [currentCharacter, currentPosition] = this.gameState.currentSelection;
+    currentPosition && this.gamePlay.deselectCell(currentPosition);
 
+    // Выбор персонажа
+    if (character) {
       if (this.isCharacterInPlayerTeam(character)) {
         this.gamePlay.selectCell(index);
         this.setCurentSlection(character, index);
       } else if (character && !this.isCharacterInPlayerTeam(character)) {
         GamePlay.showError("Нельзя выбирать не вашего персонажа");
       }
+    }
+
+    // Перемещение персонажа
+    if (
+      currentCharacter &&
+      character == null &&
+      this.isCellInRange(index, currentPosition, currentCharacter.range)
+    ) {
+      this.gameState.moveSelectedCharacterTo(index);
+      this.gamePlay.redrawPositions(this.gameState.positions);
+      this.gamePlay.deselectCell(index);
     }
   }
 

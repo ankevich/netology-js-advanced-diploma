@@ -10,11 +10,10 @@ import {
 import PositionedCharacter from "./PositionedCharacter";
 
 export default class GameState {
-  
   constructor(boardSize) {
     this.boardSize = boardSize;
     this.cells = new Array(boardSize * boardSize).fill(null);
-    
+
     this.currentPlayer = 0; // 0 - player, 1 - computer
     this.currentSelection = [null, null]; // [character, position]
 
@@ -53,6 +52,18 @@ export default class GameState {
       allowedComputerPositions.splice(index, 1);
       this.positions.push(new PositionedCharacter(character, position));
     });
+  }
+
+  moveSelectedCharacterTo(position) {
+    const [selectedCharacter] = this.currentSelection;
+    if (selectedCharacter) {
+      const selectedCharacterIndex = this.positions.findIndex(
+        (character) => character.character === selectedCharacter
+      );
+      this.positions[selectedCharacterIndex].position = position;
+      this.currentSelection = [null, null];
+      this.currentPlayer = 1 // switch to computer
+    }
   }
 
   getCharacterAt(position) {
