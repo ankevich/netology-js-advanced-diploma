@@ -161,7 +161,7 @@ export default class GameController {
     ) {
       this.gamePlay.deselectCell(index);
       const damage = this.calculateDamage(selection.character, clickedCharacter);
-      this.gameState.attackBySelectedCharacterOn(clickedCharacter, damage);
+      this.gameState.attack({character: clickedCharacter}, damage);
       this.gamePlay.showDamage(index, damage).then(() => {
         this.gamePlay.redrawPositions(this.gameState.positions);
         this.deSelect();
@@ -191,63 +191,61 @@ export default class GameController {
   }
 
   computerTurn() {
-    return
-    if (this.gameState.currentPlayer == "player") {
+    if (this.gameState.currentPlayer != "computer") {
       return;
     }
-
+    
     // Взять рандомного персонажа из команды компьютера
     const character =
-      this.gameState.computerTeam[
-        Math.floor(Math.random() * this.gameState.computerTeam.length)
-      ];
-
-    const positionedCharacter = this.gameState.positions.find(
+    this.gameState.computerTeam[
+      Math.floor(Math.random() * this.gameState.computerTeam.length)
+    ];
+    
+    const positionedAi = this.gameState.positions.find(
       (pc) => pc.character == character
     );
-
+    
     // Найти ближайшего персонажа из команды игрока
     const nearestPlayer = this.gameState.positions
       .filter((pc) => this.isCharacterInPlayerTeam(pc.character))
       .reduce((nearest, player) => {
         const distance = this.getDistance(
           player.position,
-          positionedCharacter.position
+          positionedAi.position
         );
         const nearestDistance = this.getDistance(
           nearest.position,
-          positionedCharacter.position
+          positionedAi.position
         );
         return distance < nearestDistance ? player : nearest;
       });
+      
 
-    if (
-      this.getDistance(positionedCharacter.position, nearestPlayer.position) <=
-      positionedCharacter.range
-    ) {
-      // Если в радиусе атаки, то атаковать
-      this.gameState.attackBySelectedCharacterOn(positionedCharacter);
-      const damage = calculateDamage(character, nearestPlayer.character);
-      this.gamePlay.showDamage(index, damage).then(() => {
+    // Если в радиусе атаки, то атаковать
+    if (this.getDistance(positionedAi.position, nearestPlayer.position) <= character.range) {
+      const damage = this.calculateDamage(character, nearestPlayer.character);
+      this.gameState.attack(nearestPlayer, damage);
+      this.gamePlay.showDamage(nearestPlayer.position, damage).then(() => {
         this.gameState.currentPlayer = "player";
         this.gamePlay.redrawPositions(this.gameState.positions);
       });
     } else {
       // Если не в радиусе атаки, то переместиться ближе к игроку
-      this.moveCloser(positionedCharacter, nearestPlayer.position);
+      this.moveCloser(positionedAi, nearestPlayer.position);
+      this.gamePlay.redrawPositions(this.gameState.positions);
     }
+
+    return
   }
 
-  moveCloser(positionedCharacter, position) {
+  moveCloser({character, position}, targetPosition) {
     const boardSize = 8;
+    
+    const x = position % boardSize;
+    const y = Math.floor(position / boardSize);
 
-    const character = positionedCharacter.character;
-
-    const x = positionedCharacter.position % boardSize;
-    const y = Math.floor(positionedCharacter.position / boardSize);
-
-    const targetX = position % boardSize;
-    const targetY = Math.floor(position / boardSize);
+    const targetX = targetPosition % boardSize;
+    const targetY = Math.floor(targetPosition / boardSize);
 
     const directionX = x < targetX ? 1 : -1;
     const directionY = y < targetY ? 1 : -1;
@@ -261,30 +259,32 @@ export default class GameController {
     var newX = x + moveX;
     var newY = y + moveY;
 
-    var newIndex = newX * boardSize + newY;
+    var newIndex = newY * boardSize + newX;
 
+    this.gamePlay.selectCell(newIndex, "yellow");
     // check if new position is free
-    while (!this.isPositionFree(newIndex)) {
+    while (this.isPositionFree(newIndex) == false) {
       newX -= directionX;
       if (this.isPositionFree(newX * boardSize + newY)) {
         newIndex = newX * boardSize + newY;
       } else {
         newY -= directionY;
-        newIndex = newX * boardSize + newY;
+        newIndex = newY * boardSize + newX;
       }
     }
-
-    console.log(
-      `Move ${character.type} from ${positionedCharacter.position} to ${newIndex}`
-    );
-
+      
     // Ищем индекс персонажа в позициях
-    const characterIndex = this.gameState.positions.findIndex(
-      (pc) => pc == positionedCharacter
-    );
-
+    const index = this.gameState.positions.findIndex(
+      (pc) => pc.character == character
+    );  
+      
     // Назначаем персонажу новую позицию
-    this.gameState.positions[characterIndex].position = newIndex;
+    this.gameState.positions[index].position = newIndex;
+
+    // Перерисовываем позиции
+    this.gamePlay.redrawPositions(this.gameState.positions)
+    
+    return
   }
 
   calculateDamage = (attacker, defendant) =>

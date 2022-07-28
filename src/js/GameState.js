@@ -69,15 +69,14 @@ export default class GameState {
       this.positions[characterIndex].position = newPosition;
     }
   }
-
-  attackBySelectedCharacterOn(opponent, damage) {
-    const character = this.currentSelection.character;
+  
+  attack({character}, dmg) { // PositionedCharacter
     if (character) {
-      const opponentIndex = this.positions.findIndex(
-        (pc) => pc.character === opponent
+      const index = this.positions.findIndex(
+        (pc) => pc.character === character
       );
 
-      this.positions[opponentIndex].character.health -= damage;
+      this.positions[index].character.health -= dmg;
     }
   }
 
