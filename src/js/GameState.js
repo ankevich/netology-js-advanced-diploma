@@ -14,8 +14,8 @@ export default class GameState {
     this.boardSize = boardSize;
     this.cells = new Array(boardSize * boardSize).fill(null);
 
-    this.currentPlayer = 0; // 0 - player, 1 - computer
-    this.currentSelection = [null, null]; // [character, position]
+    this.currentPlayer = "player"; // player or computer
+    this.currentSelection = null; // PositionedCharacter
 
     this.allowedPlayerClasses = [Magician, Bowman, Swordsman];
     this.allowedComputerClasses = [Vampire, Undead, Daemon];
@@ -54,41 +54,36 @@ export default class GameState {
     });
   }
 
-  moveSelectedCharacterTo(position) {
-    const [selectedCharacter] = this.currentSelection;
-    if (selectedCharacter) {
-      const selectedCharacterIndex = this.positions.findIndex(
-        (positionedCharacter) =>
-          positionedCharacter.character === selectedCharacter
+  select(character) {
+    this.currentSelection = this.positions.find(
+      (pc) => pc.character === character
+    );
+  }
+
+  moveSelectedCharacterTo(newPosition) {
+    const character = this.currentSelection.character;
+    if (character) {
+      const characterIndex = this.positions.findIndex(
+        (pc) => pc.character === character
       );
-      this.positions[selectedCharacterIndex].position = position;
-      this.currentSelection = [null, null];
-      this.currentPlayer = 1; // switch to computer
+      this.positions[characterIndex].position = newPosition;
     }
   }
 
-  attack(opponent) {
-    const [character] = this.currentSelection;
+  attackBySelectedCharacterOn(opponent, damage) {
+    const character = this.currentSelection.character;
     if (character) {
       const opponentIndex = this.positions.findIndex(
-        (positionedCharacter) => positionedCharacter.character === opponent
-      );
-
-      const damage = Math.max(
-        character.attack - opponent.defence,
-        character.attack * 0.1
+        (pc) => pc.character === opponent
       );
 
       this.positions[opponentIndex].character.health -= damage;
-
-      this.currentSelection = [null, null];
-      this.currentPlayer = 1; // switch to computer
     }
   }
 
   getCharacterAt(position) {
     const positionedCharacter = this.positions.find(
-      (positionedCharacter) => positionedCharacter.position === position
+      (pc) => pc.position === position
     );
     return positionedCharacter ? positionedCharacter.character : null;
   }
@@ -97,13 +92,5 @@ export default class GameState {
     // TODO: create object
   }
 
-  asObject() {
-    return {
-      boardSize: this.boardSize,
-      positions: this.positions,
-      currentPlayer: this.currentPlayer,
-      playerTeam: this.playerTeam,
-      computerTeam: this.computerTeam,
-    };
-  }
+  asObject() {}
 }
