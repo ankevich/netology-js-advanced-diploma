@@ -181,8 +181,8 @@ export default class GameController {
     }
   }
 
+  // Снять выделение
   deSelect() {
-    // Снять выделение
     const selection = this.gameState.currentSelection;
     if (selection != null) {
       this.gamePlay.deselectCell(selection.position);
@@ -260,8 +260,7 @@ export default class GameController {
     var newY = y + moveY;
 
     var newIndex = newY * boardSize + newX;
-
-    this.gamePlay.selectCell(newIndex, "yellow");
+    
     // check if new position is free
     while (this.isPositionFree(newIndex) == false) {
       newX -= directionX;
