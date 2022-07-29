@@ -77,7 +77,20 @@ export default class GameState {
       );
 
       this.positions[index].character.health -= dmg;
+      this.removeDeadCharacters();
     }
+  }
+
+  removeDeadCharacters() {
+    this.positions = this.positions.filter(
+      (pc) => pc.character.health > 0
+    );
+    this.computerTeam = this.computerTeam.filter(
+      (character) => character.health > 0
+    );
+    this.playerTeam = this.playerTeam.filter(
+      (character) => character.health > 0
+    );
   }
 
   getCharacterAt(position) {

@@ -196,8 +196,7 @@ export default class GameController {
     }
     
     // Взять рандомного персонажа из команды компьютера
-    const character =
-    this.gameState.computerTeam[
+    const character = this.gameState.computerTeam[
       Math.floor(Math.random() * this.gameState.computerTeam.length)
     ];
     
@@ -260,7 +259,7 @@ export default class GameController {
     var newY = y + moveY;
 
     var newIndex = newY * boardSize + newX;
-    
+
     // check if new position is free
     while (this.isPositionFree(newIndex) == false) {
       newX -= directionX;
