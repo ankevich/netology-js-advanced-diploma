@@ -78,6 +78,7 @@ export default class GameState {
 
       this.positions[index].character.health -= dmg;
       this.removeDeadCharacters();
+      this.isGameOver();
     }
   }
 
@@ -91,6 +92,14 @@ export default class GameState {
     this.playerTeam = this.playerTeam.filter(
       (character) => character.health > 0
     );
+  }
+
+  isGameOver() {
+    return this.playerTeam.length === 0 || this.computerTeam.length === 0 || this.getMaxLevel() >= 4;
+  }
+
+  getMaxLevel() {
+    return Math.max(...this.positions.map((pc) => pc.character.level));
   }
 
   getCharacterAt(position) {
