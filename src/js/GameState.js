@@ -13,9 +13,11 @@ import themes from "./themes";
 export default class GameState {
   constructor(boardSize) {
     this.boardSize = boardSize;
+    this.maxLevel = 3;
     this.cells = new Array(boardSize * boardSize).fill(null);
 
     this.currentTheme = null;
+    this.currentLevel = 0;
     this.currentPlayer = "player"; // player or computer
     this.currentSelection = null; // PositionedCharacter
     this.playerTeam = [];
@@ -33,18 +35,21 @@ export default class GameState {
       switch (this.currentTheme) {
         case themes.prairie:
           this.currentTheme = themes.desert;
+          this.currentLevel = 1;
           this.playerTeam.forEach(this.healAndLevelUp);
           this.playerTeam.push(...generateTeam(this.allowedPlayerClasses, 1, 1));
           this.computerTeam = generateTeam(this.allowedComputerClasses, 2, this.playerTeam.length);
           break;
         case themes.desert:
           this.currentTheme = themes.arctic;
+          this.currentLevel = 2;
           this.playerTeam.forEach(this.healAndLevelUp);
           this.playerTeam.push(...generateTeam(this.allowedPlayerClasses, 2, 2));
           this.computerTeam = generateTeam(this.allowedComputerClasses, 3, this.playerTeam.length);
           break;
         case themes.arctic:
           this.currentTheme = themes.mountain;
+          this.currentLevel = 3;
           this.playerTeam.forEach(this.healAndLevelUp);
           this.playerTeam.push(...generateTeam(this.allowedPlayerClasses, 3, 2));
           this.computerTeam = generateTeam(this.allowedComputerClasses, 4, this.playerTeam.length);
@@ -129,15 +134,11 @@ export default class GameState {
   }
 
   isGameOver() {
-    return this.isLevelOver() && this.getMaxLevel() > 4;
+    return this.isLevelOver() && this.currentLevel >= this.maxLevel;
   }
 
   isLevelOver() {
     return this.playerTeam.length === 0 || this.computerTeam.length === 0;
-  }
-
-  getMaxLevel() {
-    return Math.max(...this.positions.map((pc) => pc.character.level));
   }
 
   getCharacterAt(position) {

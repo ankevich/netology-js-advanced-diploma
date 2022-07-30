@@ -45,6 +45,8 @@ export default class GameController {
   }
 
   onCellEnter(index) {
+    if (this.gameState.isGameOver()) { return; }
+
     const character = this.gameState.getCharacterAt(index);
     const selection = this.gameState.currentSelection;
 
@@ -110,6 +112,8 @@ export default class GameController {
   }
 
   onCellClick(index) {
+    if (this.gameState.isGameOver()) { return; }
+    
     const selection = this.gameState.currentSelection;
     const clickedCharacter = this.gameState.getCharacterAt(index);
 
