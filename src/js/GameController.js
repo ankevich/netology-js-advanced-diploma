@@ -10,12 +10,11 @@ export default class GameController {
   }
 
   init() {
-    // Инициализируем UI
-    this.gamePlay.drawUi(themes.prairie);
-
     // -------------------------------------
     // Инициация состояния игры
     // -------------------------------------
+
+    this.gamePlay.drawUi(this.gameState.currentTheme);
     this.gamePlay.redrawPositions(this.gameState.positions);
 
     // -------------------------------------
@@ -60,26 +59,26 @@ export default class GameController {
     // -------------------------------------
     // Показываем что персонажа можно выбрать
     // -------------------------------------
-    if (                                      // Персонаж еще не выбран
-      (selection == null &&                       // На поле нет выбранного персонажа
-        character &&                              // В клетке есть персонаж
-        this.isCharacterInPlayerTeam(character))  // Персонаж из команды игрока
-      ||                                      // Персонаж выбран, но мы хотим другого
-      (selection &&                               // На поле есть выбранный персонаж
-        selection.position != index &&            // Позиция выбранного персонажа не совпадает с текущей (нет смысла выбирать что уже выбранно)
-        character &&                              // В клетке есть персонаж
-        this.isCharacterInPlayerTeam(character))  // Персонаж из команды игрока
+    if (
+      // Персонаж еще не выбран
+      (selection == null && // На поле нет выбранного персонажа
+        character && // В клетке есть персонаж
+        this.isCharacterInPlayerTeam(character)) || // Персонаж из команды игрока // Персонаж выбран, но мы хотим другого
+      (selection && // На поле есть выбранный персонаж
+        selection.position != index && // Позиция выбранного персонажа не совпадает с текущей (нет смысла выбирать что уже выбранно)
+        character && // В клетке есть персонаж
+        this.isCharacterInPlayerTeam(character)) // Персонаж из команды игрока
     ) {
-      this.gamePlay.setCursor("pointer");     // Устанавливаем курсор выбора
+      this.gamePlay.setCursor("pointer"); // Устанавливаем курсор выбора
     }
 
     // -------------------------------------
     // Подсветить зеленым если возможен переход в клетку
     // -------------------------------------
     if (
-      character == null &&                        // Клетка пустая
-      selection &&                                // Выбран персонаж
-      selection.position != index &&              // Текущая позиция не совпадает с позицией выделенного персонажа
+      character == null && // Клетка пустая
+      selection && // Выбран персонаж
+      selection.position != index && // Текущая позиция не совпадает с позицией выделенного персонажа
       this.isInRange(index, selection.position, selection.character.range) // Клетка в диапазоне действия персонажа
     ) {
       this.gamePlay.setCursor("pointer"); // Сделать курсок активным
@@ -90,20 +89,21 @@ export default class GameController {
     // Показать атаку или невозможность атаки
     // -------------------------------------
     if (
-      character &&                               // В клетке есть персонаж
-      this.isCharacterInEnemyTeam(character) &&  // Персонаж из команды противника
-      selection &&                               // Есть атакующий персонаж 
-      selection.position != index &&             // Атакуемая позиция не совпадает с позицией выделенного персонажа
+      character && // В клетке есть персонаж
+      this.isCharacterInEnemyTeam(character) && // Персонаж из команды противника
+      selection && // Есть атакующий персонаж
+      selection.position != index && // Атакуемая позиция не совпадает с позицией выделенного персонажа
       this.isInRange(index, selection.position, selection.character.range) // Клетка в диапазоне действия персонажа
     ) {
-      this.gamePlay.setCursor("crosshair");      // Курсор прицел
-      this.gamePlay.selectCell(index, "red");    // Подсветить поле красным
+      this.gamePlay.setCursor("crosshair"); // Курсор прицел
+      this.gamePlay.selectCell(index, "red"); // Подсветить поле красным
     } else if (
-      character &&                               // В клетке есть персонаж
-      selection &&                               // Есть атакующий персонаж 
-      selection.position != index &&             // Атакуемая позиция не совпадает с позицией выделенного персонажа
-      this.isCharacterInEnemyTeam(character) &&  // Персонаж из команды противника
-      this.isInRange(index, selection.position, selection.character.range) == null // Клетка НЕ в диапазоне действия
+      character && // В клетке есть персонаж
+      selection && // Есть атакующий персонаж
+      selection.position != index && // Атакуемая позиция не совпадает с позицией выделенного персонажа
+      this.isCharacterInEnemyTeam(character) && // Персонаж из команды противника
+      this.isInRange(index, selection.position, selection.character.range) ==
+        null // Клетка НЕ в диапазоне действия
     ) {
       this.gamePlay.setCursor("not-allowed");
     }
@@ -136,39 +136,44 @@ export default class GameController {
       this.isCharacterInEnemyTeam(clickedCharacter)
     ) {
       GamePlay.showError("Нельзя выбирать не вашего персонажа");
-    } 
+    }
 
     // Перемещение персонажа
     else if (
-      selection &&                  // Выбран персонаж
-      clickedCharacter == null &&   // Клетка никем не занята
+      selection && // Выбран персонаж
+      clickedCharacter == null && // Клетка никем не занята
       this.isInRange(index, selection.position, selection.character.range) // Клетка в диапазоне действия персонажа
     ) {
       this.gamePlay.deselectCell(selection.position);
       this.gameState.moveSelectedCharacterTo(index);
       this.gamePlay.deselectCell(index);
       this.gamePlay.redrawPositions(this.gameState.positions);
-      this.deSelect()
+      this.deSelect();
       this.gameState.currentPlayer = "computer";
       this.computerTurn();
     }
 
     // Атака
     else if (
-      selection &&                                      // Выбран персонаж
-      this.isCharacterInEnemyTeam(clickedCharacter) &&  // Клетка занята персонажем противника
+      selection && // Выбран персонаж
+      this.isCharacterInEnemyTeam(clickedCharacter) && // Клетка занята персонажем противника
       this.isInRange(index, selection.position, selection.character.range) // Клетка в диапазоне действия персонажа
     ) {
       this.gamePlay.deselectCell(index);
-      const damage = this.calculateDamage(selection.character, clickedCharacter);
-      this.gameState.attack({character: clickedCharacter}, damage);
+      const damage = this.calculateDamage(
+        selection.character,
+        clickedCharacter
+      );
+      this.gameState.attack({ character: clickedCharacter }, damage);
       this.gamePlay.showDamage(index, damage).then(() => {
         this.gamePlay.redrawPositions(this.gameState.positions);
         this.deSelect();
         this.gameState.currentPlayer = "computer";
         this.computerTurn();
       });
-    } 
+    }
+
+    this.gameLoop();
   }
 
   onCellLeave(index) {
@@ -181,29 +186,21 @@ export default class GameController {
     }
   }
 
-  // Снять выделение
-  deSelect() {
-    const selection = this.gameState.currentSelection;
-    if (selection != null) {
-      this.gamePlay.deselectCell(selection.position);
-      this.gameState.currentSelection = null;
-    }
-  }
-
   computerTurn() {
     if (this.gameState.currentPlayer != "computer") {
       return;
     }
-    
+
     // Взять рандомного персонажа из команды компьютера
-    const character = this.gameState.computerTeam[
-      Math.floor(Math.random() * this.gameState.computerTeam.length)
-    ];
-    
+    const character =
+      this.gameState.computerTeam[
+        Math.floor(Math.random() * this.gameState.computerTeam.length)
+      ];
+
     const positionedAi = this.gameState.positions.find(
       (pc) => pc.character == character
     );
-    
+
     // Найти ближайшего персонажа из команды игрока
     const nearestPlayer = this.gameState.positions
       .filter((pc) => this.isCharacterInPlayerTeam(pc.character))
@@ -218,10 +215,12 @@ export default class GameController {
         );
         return distance < nearestDistance ? player : nearest;
       });
-      
 
     // Если в радиусе атаки, то атаковать
-    if (this.getDistance(positionedAi.position, nearestPlayer.position) <= character.range) {
+    if (
+      this.getDistance(positionedAi.position, nearestPlayer.position) <=
+      character.range
+    ) {
       const damage = this.calculateDamage(character, nearestPlayer.character);
       this.gameState.attack(nearestPlayer, damage);
       this.gamePlay.showDamage(nearestPlayer.position, damage).then(() => {
@@ -234,12 +233,13 @@ export default class GameController {
       this.gamePlay.redrawPositions(this.gameState.positions);
     }
 
-    return
+    this.gameLoop();
+    return;
   }
 
-  moveCloser({character, position}, targetPosition) {
+  moveCloser({ character, position }, targetPosition) {
     const boardSize = 8;
-    
+
     const x = position % boardSize;
     const y = Math.floor(position / boardSize);
 
@@ -270,19 +270,19 @@ export default class GameController {
         newIndex = newY * boardSize + newX;
       }
     }
-      
+
     // Ищем индекс персонажа в позициях
     const index = this.gameState.positions.findIndex(
       (pc) => pc.character == character
-    );  
-      
+    );
+
     // Назначаем персонажу новую позицию
     this.gameState.positions[index].position = newIndex;
 
     // Перерисовываем позиции
-    this.gamePlay.redrawPositions(this.gameState.positions)
-    
-    return
+    this.gamePlay.redrawPositions(this.gameState.positions);
+
+    return;
   }
 
   calculateDamage = (attacker, defendant) =>
@@ -306,6 +306,14 @@ export default class GameController {
     return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
   }
 
+  deSelect() {
+    const selection = this.gameState.currentSelection;
+    if (selection != null) {
+      this.gamePlay.deselectCell(selection.position);
+      this.gameState.currentSelection = null;
+    }
+  }
+
   isPositionFree = (index) =>
     this.gameState.positions.find((pc) => pc.position == index) ? false : true;
 
@@ -314,6 +322,18 @@ export default class GameController {
 
   isCharacterInEnemyTeam = (character) =>
     this.gameState.computerTeam.includes(character);
+
+  gameLoop = () => {
+    if(this.gameState.isGameOver()) {
+      return
+    }
+
+    if (this.gameState.isLevelOver()) {
+      this.gameState.nextLevel();
+      this.gamePlay.drawUi(this.gameState.currentTheme);
+      this.gamePlay.redrawPositions(this.gameState.positions);  
+    }
+  }
 
   onNewGame() {
     console.log("New game");
