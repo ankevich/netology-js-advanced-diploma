@@ -13,9 +13,14 @@ import themes from "./themes";
 export default class GameState {
   constructor(boardSize) {
     this.boardSize = boardSize;
-    this.maxLevel = 3;
-    this.cells = new Array(boardSize * boardSize).fill(null);
-
+    this.maxLevel = 3;    
+    this.allowedPlayerClasses = [Magician, Bowman, Swordsman];
+    this.allowedComputerClasses = [Vampire, Undead, Daemon];
+    
+    this.resetState();
+  }
+  
+  resetState() {
     this.currentTheme = null;
     this.currentLevel = 0;
     this.currentPlayer = "player"; // player or computer
@@ -23,10 +28,7 @@ export default class GameState {
     this.playerTeam = [];
     this.computerTeam = [];
     this.positions = []; // PositionedCharacter[]
-
-    this.allowedPlayerClasses = [Magician, Bowman, Swordsman];
-    this.allowedComputerClasses = [Vampire, Undead, Daemon];
-
+    
     this.nextLevel();
   }
   
@@ -148,9 +150,57 @@ export default class GameState {
     return positionedCharacter ? positionedCharacter.character : null;
   }
 
-  static restoreFrom(object) {
-    // TODO: create object
+  restoreFrom({currentTheme, currentLevel, currentPlayer, positions}) { 
+    this.playerTeam = []
+    this.computerTeam = []
+    this.currentTheme = currentTheme;
+    this.currentLevel = currentLevel;
+    this.currentPlayer = currentPlayer;
+    
+    this.positions = positions.map(({character, position}) => {
+      const parsedCharacter = this.characterFromData(character);
+      if (this.allowedPlayerClasses.includes(parsedCharacter.constructor)) {
+        this.playerTeam.push(parsedCharacter);
+      }
+      if (this.allowedComputerClasses.includes(parsedCharacter.constructor)) {
+        this.computerTeam.push(parsedCharacter);
+      }
+      return new PositionedCharacter(parsedCharacter, position);
+    }); 
   }
 
-  asObject() {}
+  characterFromData = ({type, level, health, attack, defence, range}) => {
+    const character = this.typeToCharacter(type, level);
+    character.health = health;
+    character.attack = attack;
+    character.defence = defence;
+    character.range = range;
+    return character;
+  }
+
+  typeToCharacter(type, level) {
+    switch (type) {
+      case "bowman":
+        return new Bowman(level);
+      case "swordsman":
+        return new Swordsman(level);
+      case "magician":
+        return new Magician(level);
+      case "vampire":
+        return new Vampire(level);
+      case "undead":
+        return new Undead(level);
+      case "daemon":
+        return new Daemon(level);
+    }
+  }
+
+  asObject() {
+    return {
+      currentTheme: this.currentTheme,
+      currentLevel: this.currentLevel,
+      currentPlayer: this.currentPlayer,
+      positions: this.positions,
+    };
+  }
 }

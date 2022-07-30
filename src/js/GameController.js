@@ -46,7 +46,7 @@ export default class GameController {
 
   onCellEnter(index) {
     if (this.gameState.isGameOver()) { return; }
-
+    
     const character = this.gameState.getCharacterAt(index);
     const selection = this.gameState.currentSelection;
 
@@ -113,7 +113,7 @@ export default class GameController {
 
   onCellClick(index) {
     if (this.gameState.isGameOver()) { return; }
-    
+
     const selection = this.gameState.currentSelection;
     const clickedCharacter = this.gameState.getCharacterAt(index);
 
@@ -340,14 +340,23 @@ export default class GameController {
   }
 
   onNewGame() {
-    console.log("New game");
+    this.gameState.resetState();
+    this.gamePlay.drawUi(this.gameState.currentTheme);
+    this.gamePlay.redrawPositions(this.gameState.positions);
   }
 
   onSaveGame() {
-    console.log("Save game");
+    this.stateService.save(this.gameState.asObject());
+    this.gamePlay.drawUi(this.gameState.currentTheme);
+    this.gamePlay.redrawPositions(this.gameState.positions);
   }
 
   onLoadGame() {
-    console.log("Load game");
+    const gameState = this.stateService.load();
+    if (gameState) {
+      this.gameState.restoreFrom(gameState);
+    }
+    this.gamePlay.drawUi(this.gameState.currentTheme);
+    this.gamePlay.redrawPositions(this.gameState.positions);
   }
 }
