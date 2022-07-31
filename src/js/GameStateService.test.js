@@ -1,4 +1,4 @@
-import GameStateService from "./GameStateService";
+import GameStateService from './GameStateService';
 
 class LocalStorageMock {
   constructor() {
@@ -24,7 +24,7 @@ class LocalStorageMock {
 
 global.localStorage = new LocalStorageMock();
 
-test("функция save записывает в локальное хранилище", () => {
+test('функция save записывает в локальное хранилище', () => {
   const gameStateService = new GameStateService(localStorage);
   const state = {
     boardSize: 3,
@@ -32,7 +32,7 @@ test("функция save записывает в локальное храни�
       {
         position: 0,
         character: {
-          type: "bowman",
+          type: 'bowman',
           health: 50,
           damage: 25,
           level: 1,
@@ -41,7 +41,7 @@ test("функция save записывает в локальное храни�
       {
         position: 1,
         character: {
-          type: "swordsman",
+          type: 'swordsman',
           health: 50,
           damage: 25,
           level: 1,
@@ -50,7 +50,7 @@ test("функция save записывает в локальное храни�
       {
         position: 2,
         character: {
-          type: "magician",
+          type: 'magician',
           health: 50,
           damage: 25,
           level: 1,
@@ -59,10 +59,10 @@ test("функция save записывает в локальное храни�
     ],
   };
   gameStateService.save(state);
-  expect(localStorage.getItem("state")).toBe(JSON.stringify(state));
+  expect(localStorage.getItem('state')).toBe(JSON.stringify(state));
 });
 
-test("функция load загружает из локального хранилища", () => {
+test('функция load загружает из локального хранилища', () => {
   const gameStateService = new GameStateService(localStorage);
   const state = {
     boardSize: 3,
@@ -70,7 +70,7 @@ test("функция load загружает из локального хран�
       {
         position: 0,
         character: {
-          type: "bowman",
+          type: 'bowman',
           health: 50,
           damage: 25,
           level: 1,
@@ -79,7 +79,7 @@ test("функция load загружает из локального хран�
       {
         position: 1,
         character: {
-          type: "swordsman",
+          type: 'swordsman',
           health: 50,
           damage: 25,
           level: 1,
@@ -88,7 +88,7 @@ test("функция load загружает из локального хран�
       {
         position: 2,
         character: {
-          type: "magician",
+          type: 'magician',
           health: 50,
           damage: 25,
           level: 1,
@@ -96,12 +96,12 @@ test("функция load загружает из локального хран�
       },
     ],
   };
-  localStorage.setItem("state", JSON.stringify(state));
+  localStorage.setItem('state', JSON.stringify(state));
   expect(gameStateService.load()).toEqual(state);
 });
 
-test("функция load выдает ошибку при невалидном состоянии", () => {
+test('функция load выдает ошибку при невалидном состоянии', () => {
   const gameStateService = new GameStateService(localStorage);
-  localStorage.setItem("state", "invalid");
-  expect(() => gameStateService.load()).toThrowError("Invalid state");
+  localStorage.setItem('state', 'invalid');
+  expect(() => gameStateService.load()).toThrowError('Invalid state');
 });

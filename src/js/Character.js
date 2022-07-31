@@ -5,7 +5,7 @@ export default class Character {
     this.defence = 0;
     this.health = 50;
     this.type = type;
-    
+
     if (new.target === Character) {
       throw new Error('Нельзя создавать экземпляры базового класса');
     }

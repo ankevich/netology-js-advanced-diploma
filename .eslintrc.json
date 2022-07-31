@@ -1,15 +1,23 @@
 {
   "extends": "airbnb-base",
   "env": {
-     "es6": true,
-     "browser": true,
-     "jest": true
+    "es6": true,
+    "browser": true,
+    "jest": true
   },
   "rules": {
-    "no-restricted-syntax": [
-      "error",
-      "LabeledStatement",
-      "WithStatement"
-    ]
-  }
+    "max-len": 0,
+    "no-alert": "off",
+    "no-param-reassign": 0,
+    "no-plusplus": 0,
+    "class-methods-use-this": 0,
+    "brace-style": "off",
+    "import/no-named-as-default": "off",
+    "import/no-named-as-default-member": "off",
+    "new-cap": "off",
+    "import/prefer-default-export": "off",
+    "max-classes-per-file": ["off"],
+    "no-restricted-syntax": ["error", "LabeledStatement", "WithStatement"]
+  },
+  "parser": "@babel/eslint-parser"
 }
