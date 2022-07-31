@@ -35,40 +35,25 @@ test("функция save записывает в локальное храни�
           type: "bowman",
           health: 50,
           damage: 25,
-          armor: 25,
           level: 1,
-          experience: 0,
-          attackSpeed: 2,
-          attackRange: 1,
-          attackType: "melee",
         },
       },
       {
         position: 1,
         character: {
-          type: "archer",
+          type: "swordsman",
           health: 50,
           damage: 25,
-          armor: 25,
           level: 1,
-          experience: 0,
-          attackSpeed: 2,
-          attackRange: 3,
-          attackType: "ranged",
         },
       },
       {
         position: 2,
         character: {
-          type: "wizard",
+          type: "magician",
           health: 50,
           damage: 25,
-          armor: 25,
           level: 1,
-          experience: 0,
-          attackSpeed: 2,
-          attackRange: 4,
-          attackType: "magic",
         },
       },
     ],
@@ -77,61 +62,46 @@ test("функция save записывает в локальное храни�
   expect(localStorage.getItem("state")).toBe(JSON.stringify(state));
 });
 
-test('функция load загружает из локального хранилища', () => {
-    const gameStateService = new GameStateService(localStorage);
-    const state = {
-        boardSize: 3,
-        positions: [
-        {
-            position: 0,
-            character: {
-            type: "bowman",
-            health: 50,
-            damage: 25,
-            armor: 25,
-            level: 1,
-            experience: 0,
-            attackSpeed: 2,
-            attackRange: 1,
-            attackType: "melee",
-            },
+test("функция load загружает из локального хранилища", () => {
+  const gameStateService = new GameStateService(localStorage);
+  const state = {
+    boardSize: 3,
+    positions: [
+      {
+        position: 0,
+        character: {
+          type: "bowman",
+          health: 50,
+          damage: 25,
+          level: 1,
         },
-        {
-            position: 1,
-            character: {
-            type: "archer",
-            health: 50,
-            damage: 25,
-            armor: 25,
-            level: 1,
-            experience: 0,
-            attackSpeed: 2,
-            attackRange: 3,
-            attackType: "ranged",
-            },
+      },
+      {
+        position: 1,
+        character: {
+          type: "swordsman",
+          health: 50,
+          damage: 25,
+          level: 1,
         },
-        {
-            position: 2,
-            character: {
-            type: "wizard",
-            health: 50,
-            damage: 25,
-            armor: 25,
-            level: 1,
-            experience: 0,
-            attackSpeed: 2,
-            attackRange: 4,
-            attackType: "magic",
-            },
+      },
+      {
+        position: 2,
+        character: {
+          type: "magician",
+          health: 50,
+          damage: 25,
+          level: 1,
         },
-        ],
-    };
-    localStorage.setItem("state", JSON.stringify(state));
-    expect(gameStateService.load()).toEqual(state);
-})
+      },
+    ],
+  };
+  localStorage.setItem("state", JSON.stringify(state));
+  expect(gameStateService.load()).toEqual(state);
+});
 
-test('функция load выдает ошибку при невалидном состоянии', () => {
-    const gameStateService = new GameStateService(localStorage);
-    localStorage.setItem("state", "invalid");
-    expect(() => gameStateService.load()).toThrowError('Invalid state');
-})
+test("функция load выдает ошибку при невалидном состоянии", () => {
+  const gameStateService = new GameStateService(localStorage);
+  localStorage.setItem("state", "invalid");
+  expect(() => gameStateService.load()).toThrowError("Invalid state");
+});
