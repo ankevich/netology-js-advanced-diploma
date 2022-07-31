@@ -45,8 +45,10 @@ export default class GameController {
   }
 
   onCellEnter(index) {
-    if (this.gameState.isGameOver()) { return; }
-    
+    if (this.gameState.isGameOver()) {
+      return;
+    }
+
     const character = this.gameState.getCharacterAt(index);
     const selection = this.gameState.currentSelection;
 
@@ -54,7 +56,7 @@ export default class GameController {
     // Показываем tooltip
     // -------------------------------------
     if (character) {
-      const message = `${character.type}: 🎖${character.level} ⚔${character.attack} 🛡${character.defence} ❤${character.health} 🦶${character.range}`;
+      const message = this.generateTooltip(character);
       this.gamePlay.showCellTooltip(message, index);
     }
 
@@ -112,7 +114,9 @@ export default class GameController {
   }
 
   onCellClick(index) {
-    if (this.gameState.isGameOver()) { return; }
+    if (this.gameState.isGameOver()) {
+      return;
+    }
 
     const selection = this.gameState.currentSelection;
     const clickedCharacter = this.gameState.getCharacterAt(index);
@@ -289,6 +293,10 @@ export default class GameController {
     return;
   }
 
+  generateTooltip(character) {
+    return `${character.type}: 🎖${character.level} ⚔${character.attack} 🛡${character.defence} ❤${character.health} 🦶${character.range}`;
+  }
+
   calculateDamage = (attacker, defendant) =>
     Math.max(attacker.attack - defendant.defence, attacker.attack * 0.1);
 
@@ -328,16 +336,16 @@ export default class GameController {
     this.gameState.computerTeam.includes(character);
 
   gameLoop = () => {
-    if(this.gameState.isGameOver()) {
-      return
+    if (this.gameState.isGameOver()) {
+      return;
     }
 
     if (this.gameState.isLevelOver()) {
       this.gameState.nextLevel();
       this.gamePlay.drawUi(this.gameState.currentTheme);
-      this.gamePlay.redrawPositions(this.gameState.positions);  
+      this.gamePlay.redrawPositions(this.gameState.positions);
     }
-  }
+  };
 
   onNewGame() {
     this.gameState.resetState();
